@@ -12,6 +12,10 @@
     "lib": [ // 指定运行时需要的类型声明（如DOM、ES新API等）
       "ESNext", // ES最新特性类型支持
       "DOM" // 浏览器DOM类型支持
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@vue/*":["packages/*/src"]
+    }
   }
 }

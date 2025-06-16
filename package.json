@@ -6,15 +6,12 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev":"node scripts/dev.js reactivity -f esm"
+    "dev": "node scripts/dev.js reactivity -f esm"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.11.0",
-  "dependencies": {
-    "vue": "^3.5.16"
-  },
   "devDependencies": {
     "esbuild": "^0.25.5",
     "minimist": "^1.2.8",
