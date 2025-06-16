@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "outDir": "dist", // 编译后的输出目录（存放生成的JS文件）
+    "sourceMap": true, // 生成sourcemap文件（便于调试时映射到TS源码）
+    "target": "es2016", // 编译目标JS版本（ES2016对应ES7语法）
+    "module": "esnext", // 模块系统类型（支持动态import等最新特性）
+    "moduleResolution": "node", // 模块解析策略（遵循Node.js的路径解析规则）
+    "strict": false, // 是否启用所有严格类型检查（默认false）
+    "resolveJsonModule": true, // 允许导入JSON文件（如`import config from './config.json'`）
+    "esModuleInterop": true, // 增强CommonJS和ES模块的互操作性（如允许`import React from 'react'`）
+    "jsx": "preserve", // JSX处理方式（preserve保留原样，不编译）
+    "lib": [ // 指定运行时需要的类型声明（如DOM、ES新API等）
+      "ESNext", // ES最新特性类型支持
+      "DOM" // 浏览器DOM类型支持
+    ]
+  }
+}
