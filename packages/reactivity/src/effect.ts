@@ -6,11 +6,19 @@ export function effect(fn, options) {
     _effect.run()
 }
 
-function clearEffect(effect) {
+function preClearEffect(effect) {
     effect._depLength = 0; // 清空依赖长度
     effect._trackId++; // 递增标识符
 }
-
+function postClearEffect(effect) {
+    if (effect.deps.length > effect._depsLength) {
+        //如果依赖长度大于当前的长度，说明有多余的依赖
+        for (let i = effect._depLength; i < effect.deps.length; i++) {
+            cleanDepEffect(effect.deps[i], effect)
+        }
+        effect.deps.length = effect._depLength; 
+    }
+}
 export let activeEffect;
 const effectStack = []; // 全局栈
 class ReactiveEffect {
@@ -34,10 +42,11 @@ class ReactiveEffect {
         try {
 
             //effcet重新执行前，需要将上一次的依赖清空
-            clearEffect(this);
+            preClearEffect(this);
             //执行fn
             return this.fn()
         } finally {
+            postClearEffect(this);
             effectStack.pop();
             activeEffect = effectStack[effectStack.length - 1]; // 恢复为上一层的 effect
         }
