@@ -1,70 +1,86 @@
-# mini-vue
+# JavaScript核心概念与响应式系统实现
 
-一个手写实现的简化版Vue.js核心，用于学习和理解Vue的工作原理，用于本人学习vue
+## 项目概述
+这是一个结合JavaScript核心概念实现与简易响应式系统学习的混合项目，包含两部分主要内容：
+1. JavaScript重要概念的手写实现
+2. 类似Vue3的响应式系统基础实现
 
-## ✨ 特性
+## 功能特点
 
-- 响应式数据系统
-- 虚拟DOM实现
-- 模板编译
-- 组件系统（基础实现）
-- 指令系统（v-model, v-bind等基础指令）
+### JavaScript核心实现
+- `this`指向原理与示例
+- 函数柯里化实现
+- 原生`call`/`apply`/`bind`方法手写实现
+- Promise实现（含HTML测试示例）
+- 节流(Throttle)与防抖(Debounce)实现（含HTML测试示例）
 
-## 🚀 安装与使用
+### Reactivity模块
+- 响应式系统基础实现
+- 核心功能：
+  - reactive响应式对象
+  - effect副作用函数
+  - 依赖收集与触发
 
+## 目录结构
+```
+.
+├── js源码/            # JavaScript核心概念实现
+│   ├── this指向.js
+│   ├── 函数柯里化.js
+│   ├── 手写call、apply、bind方法.js
+│   ├── 手写Promise.js
+│   ├── 节流.js
+│   ├── 防抖.js
+│   └── ... (配套HTML测试文件)
+│
+├── packages/          # Reactivity模块
+│   ├── reactivity/    # 响应式系统实现
+│   └── shared/        # 共享工具
+│
+└── scripts/           # 开发脚本
+    └── dev.js         # 开发启动脚本
+```
+
+## 使用说明
+
+### 安装依赖
 ```bash
-# 克隆仓库
-git clone https://github.com/your-username/mini-vue.git
-cd mini-vue
-
-# 安装依赖
-npm install
-
-# 运行示例
-npm run dev
+pnpm install
 ```
 
-## 📝 示例代码
-
-```javascript
-import { createApp, reactive } from 'mini-vue'
-
-const app = createApp({
-  setup() {
-    const state = reactive({ count: 0 })
-    
-    const increment = () => {
-      state.count++
-    }
-
-    return { state, increment }
-  }
-})
-
-app.mount('#app')
+### 运行JS示例
+1. 直接通过浏览器打开对应的HTML文件（如`手写Promise.html`）
+2. 或通过Node.js运行JS文件：
+```bash
+node js源码/文件名.js
 ```
 
-## 🛠️ 开发指南
-
-### 项目结构
-```
-src/
-  ├── reactivity/    # 响应式系统实现
-  ├── vdom/          # 虚拟DOM实现
-  ├── compiler/      # 模板编译器
-  └── index.js       # 主入口文件
+### 开发Reactivity模块
+```bash
+pnpm dev
 ```
 
-### 添加新功能
-1. 在对应目录下创建新模块
-2. 编写单元测试
-3. 更新文档
+## 实现内容清单
 
-### 贡献规范
-- 遵循现有代码风格
-- 提交前运行测试
-- 保持提交信息清晰
+### js源码目录
+| 文件名 | 实现内容 |
+|--------|----------|
+| this指向.js | `this`绑定规则与示例 |
+| 函数柯里化.js | 函数柯里化实现与应用 |
+| 手写call、apply、bind方法.js | 原生方法的polyfill实现 |
+| 手写Promise.js | Promise/A+规范实现 |
+| 节流.js | 节流函数实现 |
+| 防抖.js | 防抖函数实现 |
 
-## 📜 许可证
+### packages/reactivity
+| 文件 | 功能 |
+|------|------|
+| baseHandler.ts | Proxy处理器实现 |
+| effect.ts | 副作用函数实现 |
+| reactive.ts | reactive核心实现 |
+| index.ts | 模块入口 |
 
-MIT License
+## 开发建议
+1. 阅读代码时结合对应概念的原理理解
+2. 通过修改示例代码观察效果变化
+3. 逐步扩展实现更多功能

@@ -1,5 +1,4 @@
-import { activeEffect } from "./effect";
-import { track } from "./reactiveEffect";
+import { track, trigger } from "./reactiveEffect";
 
 export enum ReactiveFlags {
     IS_REACTIVE = '__v_isReactive',
@@ -10,15 +9,20 @@ export const mutableHandlers: ProxyHandler<any> = {
         if (key === ReactiveFlags.IS_REACTIVE) {
             return true
         }
-        track(target,key) // 收集依赖  
+        track(target, key) // 收集依赖  
         //取值的时候，让响应式属性和effect关联起来
         return Reflect.get(target, key, receiver)
     },
     set(target, key, value, receiver) {
         //找到属性，让对应的effect重新执行
+        let oldValue = target[key]
         Reflect.set(target, key, value, receiver)
+        if (oldValue !== value) {
+            //触发依赖
+            trigger(target, key, value, oldValue)
+
+        }
         return true
-        
 
     }
 }
