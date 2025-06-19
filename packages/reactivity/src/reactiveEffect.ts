@@ -28,8 +28,6 @@ export function track(target, key) {
         trackEffects(activeEffect, dep)
         
     }
-    console.log(targetMap);
-
     
 }
 
@@ -43,6 +41,6 @@ export function trigger(target, key, value, oldValue) {
     let dep = depMap.get(key)
     if (dep) {
         //修改属性的对应effect
-        triggerEffects(dep, value, oldValue)
+        triggerEffects(dep)
     }
 }

@@ -41,3 +41,47 @@ function triggerRefValue(ref) {
         triggerEffects(dep)//触发依赖  
     }
 }
+
+// toRef 
+class ObjectRefImpl {
+    public _v_isRef = true//增加ref标识
+    constructor(public target, public key) { }
+
+    get value() {
+        return this.target[this.key]
+    }
+    set value(newVal) {
+        this.target[this.key] = newVal
+    }
+}
+
+
+export function toRef(target, key) {
+    return new ObjectRefImpl(target, key);
+}
+
+export function toRefs(target) {
+    const res = Array.isArray(target) ? new Array(target.length) : {};
+    for (const key in target) {
+        res[key] = toRef(target, key);
+    }
+    return res;
+}
+
+export function proxyRefs(objectWithRefs) {
+    return new Proxy(objectWithRefs, {
+        get(target, key, receiver) {
+            let res = Reflect.get(target, key, receiver)
+            return res._v_isRef ? res.value : res
+        },
+        set(target, key, value, receiver) {
+            const oldValue = target[key];
+            if (oldValue._v_isRef) {
+                oldValue.value = value
+            } else {
+                Reflect.set(target, key, value, receiver)
+            }
+            return true
+        }
+    })
+}

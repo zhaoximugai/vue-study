@@ -11,6 +11,7 @@ export const mutableHandlers: ProxyHandler<any> = {
         if (key === ReactiveFlags.IS_REACTIVE) {
             return true
         }
+        
         track(target, key) // 收集依赖  
         let res=Reflect.get(target, key, receiver) // 取值
         if(isObject(res)){
