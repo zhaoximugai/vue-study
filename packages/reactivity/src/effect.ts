@@ -4,8 +4,15 @@ export function effect(fn, options) {
         _effect.run()
     });
     _effect.run()
-}
 
+    if (options) {
+        //如果有options，设置一些属性
+        Object.assign(_effect, options);
+    }
+    const runner = _effect.run.bind(_effect); // 创建一个绑定了 effect 的 run 方法的函数
+    runner.effect = _effect; // 将 effect 实例绑定到 runner 上
+    return runner; //外界可以人自己重新执行run方法
+}
 function preClearEffect(effect) {
     effect._depLength = 0; // 清空依赖长度
     effect._trackId++; // 递增标识符
@@ -16,7 +23,7 @@ function postClearEffect(effect) {
         for (let i = effect._depLength; i < effect.deps.length; i++) {
             cleanDepEffect(effect.deps[i], effect)
         }
-        effect.deps.length = effect._depLength; 
+        effect.deps.length = effect._depLength;
     }
 }
 export let activeEffect;
@@ -25,6 +32,8 @@ class ReactiveEffect {
     _trackId = 0// 用于跟踪依赖的唯一标识符
     deps = []; // 存储依赖的集合
     _depLength = 0; // 用于跟踪依赖的长度
+    _running = 0
+
     public active = true; //表示当前effect是否处于激活状态
     //fn 是用户传入的函数，scheduler是调度器
     //如果fn中的依赖发生变化，会调用run()
@@ -43,16 +52,17 @@ class ReactiveEffect {
 
             //effcet重新执行前，需要将上一次的依赖清空
             preClearEffect(this);
+            this._running++
             //执行fn
             return this.fn()
         } finally {
+            this._running--;
             postClearEffect(this);
             effectStack.pop();
             activeEffect = effectStack[effectStack.length - 1]; // 恢复为上一层的 effect
         }
     }
 }
-
 function cleanDepEffect(dep, effect) {
     dep.delete(effect); // 从依赖中删除当前 effect
     if (dep.size === 0) {
@@ -60,9 +70,7 @@ function cleanDepEffect(dep, effect) {
         dep.cleanup();
     }
 }
-
 export function trackEffects(effect, dep) {
-
     if (dep.get(effect) !== effect._trackId) {
         dep.set(effect, effect._trackId);
         let oldDeps = effect.deps[effect._depLength]
@@ -77,15 +85,18 @@ export function trackEffects(effect, dep) {
             effect._depLength++
         }
     }
-
 }
 
 export function
     triggerEffects(dep, value, oldValue) {
     for (const effect of dep.keys()) {
         if (effect.active) {
-            if (effect.scheduler) {
-                effect.scheduler();
+            if (effect._running === 0) {
+                if (effect.scheduler) {
+                    //如果不是正在运行，直接执行调度器
+                    effect.scheduler();
+                }
+
             }
         }
     }
