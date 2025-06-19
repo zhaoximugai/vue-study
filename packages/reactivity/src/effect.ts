@@ -88,7 +88,7 @@ export function trackEffects(effect, dep) {
 }
 
 export function
-    triggerEffects(dep, value, oldValue) {
+    triggerEffects(dep) {
     for (const effect of dep.keys()) {
         if (effect.active) {
             if (effect._running === 0) {

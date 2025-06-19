@@ -29,3 +29,10 @@ export function reactive(target) {
     return createReactiveObject(target);
 
 }
+
+export function toReactive(value) {
+    if (isObject(value)) {
+        reactive(value)
+    }
+    return value
+}
