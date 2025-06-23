@@ -1,5 +1,6 @@
 import { isObject } from "@vue/shared";
-import { mutableHandlers, ReactiveFlags } from "./baseHandler";
+import { mutableHandlers } from "./baseHandler";
+import { ReactiveFlags } from "./constants";
 
 //reactiveMap 用于存储已经创建的代理对象
 //用于记录代理的对象，可以复用

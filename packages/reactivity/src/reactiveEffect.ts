@@ -26,9 +26,9 @@ export function track(target, key) {
         }
         //将当前的effect添加到dep(映射表)依赖中,后续可以根据值的变化触发effect重新执行
         trackEffects(activeEffect, dep)
-        
+
     }
-    
+
 }
 
 //触发依赖
