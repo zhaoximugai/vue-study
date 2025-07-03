@@ -46,10 +46,23 @@ function doWatch(source, cb, { deep, immediate }) {
     }
 
     let oldValue;
+
+    let clean;
+    const onCleanup = (fn) => {
+        clean = () => {
+            fn()
+            clean = undefined
+        }
+    }
+
     const job = () => {
         if (cb) {
+            if (clean) {
+                clean()
+
+            }
             const newValue = effect.run();
-            cb(oldValue, newValue);
+            cb(oldValue, newValue, onCleanup);
             oldValue = newValue;
         } else {
             effect.run();
@@ -69,4 +82,8 @@ function doWatch(source, cb, { deep, immediate }) {
         //watchEffect
         effect.run();
     }
+    const unwatch = () => {
+        effect.stop();
+    }
+    return unwatch;
 }

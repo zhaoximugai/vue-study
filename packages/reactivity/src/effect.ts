@@ -76,6 +76,13 @@ export class ReactiveEffect {
             activeEffect = effectStack[effectStack.length - 1]; // 恢复为上一层的 effect
         }
     }
+    stop() {
+        if (this.active) {
+            this.active = false; // 停止当前 effect
+            preClearEffect(this);
+            postClearEffect(this);
+        }
+    }
 }
 function cleanDepEffect(dep, effect) {
     dep.delete(effect); // 从依赖中删除当前 effect
