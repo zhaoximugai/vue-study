@@ -37,3 +37,8 @@ export function toReactive(value) {
     }
     return value
 }
+
+export function isReactive(value) {
+    //判断是否是代理对象
+    return !!(value && value[ReactiveFlags.IS_REACTIVE])
+}
