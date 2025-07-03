@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script type="module">
+        // import { ref, effect, reactive, computed, watch } from '/node_modules/@vue/reactivity/dist/reactivity.esm-browser.js'
+
+        import {ref, effect, reactive, computed,watch,watchEffect} from './reactivity.esm.js'
+
+        let name=ref('hjc')
+        const state = reactive({ name: 'hjc', age: 18 ,address: { city: 'beijing' }})
+        const unwatch= watch(()=>state.name, (oldValue, newValue,onCleanup) => {
+            console.log('watch', oldValue, newValue);
+        }, { deep: true,immediate: true });
+        // watchEffect(() => {
+        //     console.log('watchEffect', state.name);
+        // });
+        setTimeout(() => {
+            state.name = '666'
+            state.name = '777'
+        }, 2000);
+
+    </script>
+</body>
+
+</html>

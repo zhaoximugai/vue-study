@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+
+    <script type="module">
+        // import { ref, effect, reactive, computed } from '/node_modules/@vue/reactivity/dist/reactivity.esm-browser.js'
+
+        import { ref, effect, reactive, computed } from './reactivity.esm.js';
+
+        const state = reactive({ name: 'hjc' })
+
+        const aliasName = computed({
+            get(obdValue) {
+                console.log('obdValue', obdValue);
+                return state.name + '123'
+            },
+            set(value){
+                console.log('set value', value);
+            }
+        })
+        effect(() => {
+            console.log(aliasName.value);
+        })
+        // console.log(aliasName.value);
+        setTimeout(() => {
+            state.name = '666'
+        }, 2000);
+
+    </script>
+</body>
+
+</html>
