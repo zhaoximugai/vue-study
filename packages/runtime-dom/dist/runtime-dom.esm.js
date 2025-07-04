@@ -402,7 +402,7 @@ function doWatch(source, cb, { deep, immediate }) {
 
 // packages/runtime-dom/src/nodeOps.ts
 var nodeOps = {
-  insert: (el, parent, anchor = null) => parent.insertBefore(el, anchor),
+  insert: (el, parent, anchor) => parent.insertBefore(el, anchor || null),
   // 插入节点到父节点中指定位置
   remove: (el) => el.parentNode?.removeChild(el),
   // 从父节点中移除节点
@@ -446,17 +446,17 @@ function createInvoker(value) {
 }
 function patchEvent(el, name, nextValue) {
   const invokers = el._vei || (el._vei = {});
-  const eventNmae = name.slice(2).tolowerCase();
+  const eventName = name.slice(2).toLowerCase();
   const prevInvoker = invokers[name];
   if (prevInvoker && nextValue) {
     return prevInvoker.value = nextValue;
   }
   if (nextValue) {
     const invoker = invokers[name] = createInvoker(nextValue);
-    return el.addEventListener(eventNmae, invoker);
+    return el.addEventListener(eventName, invoker);
   }
   if (prevInvoker) {
-    el.removeEventListener(eventNmae, prevInvoker);
+    el.removeEventListener(eventName, prevInvoker);
     invokers[name] = void 0;
   }
 }
@@ -478,11 +478,11 @@ function patchStyle(el, prevValue, nextValue) {
 
 // packages/runtime-dom/src/patchProp.ts
 function patchProp(el, key, prevValue, nextValue) {
-  if (key = "class") {
+  if (key === "class") {
     return patchClass(el, nextValue);
   } else if (key === "style") {
     return patchStyle(el, prevValue, nextValue);
-  } else if (/^on[a-z]/.test(key)) {
+  } else if (/^on[^a-z]/.test(key)) {
     return patchEvent(el, key, nextValue);
   } else {
     return patchAttr(el, key, nextValue);
@@ -490,7 +490,7 @@ function patchProp(el, key, prevValue, nextValue) {
 }
 
 // packages/runtime-dom/src/index.ts
-var renderOptions = Object.assign({ nodeOps }, patchProp);
+var renderOptions = Object.assign({ patchProp }, nodeOps);
 export {
   ReactiveEffect,
   activeEffect,

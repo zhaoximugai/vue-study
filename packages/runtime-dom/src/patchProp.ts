@@ -9,15 +9,16 @@ import patchStyle from "./modules/patchStyle";
 
 //diff
 export default function patchProp(el, key, prevValue, nextValue) {
-    if (key = 'class') {
+
+    if (key === 'class') {
         return patchClass(el, nextValue)
     } else if (key === 'style') {
         //处理style
         return patchStyle(el, prevValue, nextValue)
-    } else if (/^on[a-z]/.test(key)) {
+    } else if (/^on[^a-z]/.test(key)) {
         //处理事件
         return patchEvent(el, key, nextValue)
-    }else{
+    } else {
         return patchAttr(el, key, nextValue)
     }
 }

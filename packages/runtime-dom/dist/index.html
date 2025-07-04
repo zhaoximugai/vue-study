@@ -22,7 +22,7 @@
 
         //@vue/runtime-dom  -> @vue/runtime-core  -> @vue/reactivity
 
-        let ele = h('h1', { style: { color: red } }, 'hjc')
+        let ele = h('h1', { style: { color: 'red' },onClick:()=>alert('123') }, 'hjc')
         // render(ele,app)
         console.log(renderOptions,'createElement)');
         
