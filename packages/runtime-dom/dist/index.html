@@ -27,9 +27,10 @@
         //@vue/runtime-dom  -> @vue/runtime-core  -> @vue/reactivity
 
         let ele = h('h1', { style: { color: 'red' },onClick:()=>alert('123') }, 'hjc')
+        let ele2 = h('h1', [h('p', 'hello world'), h('p', 'hello worl4444d')])
         // render(ele,app)
         
-        render(ele, app)
+        render(ele2, app)
 
     </script>
 </body>

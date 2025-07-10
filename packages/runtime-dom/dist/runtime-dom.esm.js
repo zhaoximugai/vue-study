@@ -90,16 +90,46 @@ function patchProp(el, key, prevValue, nextValue) {
 // packages/runtime-core/src/index.ts
 function createRenderer(renderOptions2) {
   const {
-    inseret: hostInsert,
+    insert: hostInsert,
     remove: hostRemove,
     createElement: hostCreateElement,
     createText: hostCreateText,
     setText: hostSetText,
+    setElementText: hostSetElementText,
     parentNode: hostParentNode,
     nextSibling: hostNextSibling,
     patchProp: hostPatchProp
   } = renderOptions2;
+  const mountChildren = (children, container) => {
+    for (let i = 0; i < children.length; i++) {
+      patch(null, children[i], container);
+    }
+  };
+  const mountElement = (vnode, container) => {
+    const { type, props, children, shapeFlag } = vnode;
+    const el = hostCreateElement(type);
+    for (const key in props) {
+      hostPatchProp(el, key, null, props[key]);
+    }
+    if (shapeFlag & 8 /* TEXT_CHILDREN */) {
+      hostSetElementText(el, children);
+    } else if (shapeFlag & 16 /* ARRAY_CHILDREN */) {
+      mountChildren(children, el);
+    }
+    hostInsert(el, container);
+    hostInsert(el, container);
+  };
+  const patch = (n1, n2, container) => {
+    if (n1 === n2) {
+      return;
+    }
+    if (n1 == null) {
+      mountElement(n2, container);
+    }
+  };
   const render2 = (vnode, container) => {
+    patch(container._vnode || null, vnode, container);
+    container._vnode = vnode;
   };
   return {
     render: render2
