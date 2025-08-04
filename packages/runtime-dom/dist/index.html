@@ -10,14 +10,14 @@
 <body>
     <div id="app"></div>
     <script type="module">
-        import {
-            createRenderer,
-            // render,
-            render,
-            h
-        } from '/node_modules/@vue/runtime-dom/dist/runtime-dom.esm-browser.js'
+        // import {
+        //     createRenderer,
+        //     // render,
+        //     render,
+        //     // h
+        // } from '/node_modules/@vue/runtime-dom/dist/runtime-dom.esm-browser.js'
 
-        // import { renderOptions, render } from './runtime-dom.esm.js'
+        import { renderOptions, render,h } from './runtime-dom.esm.js'
 
         //createRenderer 我们可以自己创建一个渲染器
         //render 用内置的渲染器进行渲染
@@ -27,11 +27,16 @@
 
         //@vue/runtime-dom  -> @vue/runtime-core  -> @vue/reactivity
 
-        let ele = h('h1', { style: { color: 'red' },onClick: () => alert('123'),a:1 }, 'hjc')
-        let ele2 = h('h1', h('h2', 'hjc'))
-        // render(ele,app)
+        //h(类型,属性,子节点)
+        //h(类型,子节点)
 
-        render(ele2, app)
+        let ele = h('h1',{}, h('div','divdiv'))
+        console.log(ele);
+        
+        // let ele2 = h('h1', h('h2', 'hjc'))
+        render(ele,app)
+
+        // render(ele2, app)
 
     </script>
 </body>

@@ -87,7 +87,66 @@ function patchProp(el, key, prevValue, nextValue) {
   }
 }
 
-// packages/runtime-core/src/index.ts
+// packages/shared/src/index.ts
+function isObject(value) {
+  return typeof value === "object" && value !== null;
+}
+function isString(value) {
+  return typeof value === "string";
+}
+
+// packages/runtime-core/src/createVNode.ts
+function isVnode(value) {
+  return value?.__v_isVnode;
+}
+function createVNode(type, props, children) {
+  const shapeFlag = isString(type) ? 1 /* ELEMENT */ : 0;
+  const vnode = {
+    __v_isVnode: true,
+    type,
+    props,
+    children,
+    key: props?.key,
+    //diff算法后面需要的key
+    el: null,
+    //虚拟节点需要对应的真实节点,
+    shapeFlag
+  };
+  if (children) {
+    if (Array.isArray(children)) {
+      vnode.shapeFlag = vnode.shapeFlag | 16 /* ARRAY_CHILDREN */;
+    } else {
+      children = String(children);
+      vnode.shapeFlag = vnode.shapeFlag | 8 /* TEXT_CHILDREN */;
+    }
+  }
+  return vnode;
+}
+
+// packages/runtime-core/src/h.ts
+function h(type, propsOrChildren, children) {
+  let l = arguments.length;
+  if (l === 2) {
+    if (isObject(propsOrChildren) && !Array.isArray(propsOrChildren)) {
+      if (isVnode(propsOrChildren)) {
+        return createVNode(type, null, [propsOrChildren]);
+      } else {
+        return createVNode(type, propsOrChildren);
+      }
+    }
+    return createVNode(type, null, propsOrChildren);
+  } else {
+    if (l > 3) {
+      children = Array.from(arguments).slice(2);
+    }
+    if (l === 3 && isVnode(children)) {
+      children = [children];
+    }
+    return createVNode(type, propsOrChildren, children);
+  }
+}
+
+// packages/runtime-core/src/renderer.ts
 function createRenderer(renderOptions2) {
   const {
     insert: hostInsert,
@@ -143,6 +202,9 @@ var render = (vnode, container) => {
 };
 export {
   createRenderer,
+  createVNode,
+  h,
+  isVnode,
   render,
   renderOptions
 };
