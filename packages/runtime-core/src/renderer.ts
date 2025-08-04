@@ -1,4 +1,5 @@
 import { ShapeFlags } from "@vue/shared";
+import { isSameVnode } from "./createVNode";
 
 export function createRenderer(renderOptions) {
     const {
@@ -23,7 +24,8 @@ export function createRenderer(renderOptions) {
     const mountElement = (vnode, container) => {
         const { type, props, children, shapeFlag } = vnode;
         //创建元素
-        const el = hostCreateElement(type);
+        //第一层渲染时让虚拟节点和真实的dom创建关联 vnode.el=真实dom
+        const el = (vnode.el = hostCreateElement(type))
         //设置属性
         for (const key in props) {
             hostPatchProp(el, key, null, props[key]);
@@ -40,19 +42,65 @@ export function createRenderer(renderOptions) {
         hostInsert(el, container);
 
     }
+    const processElement = (n1, n2, container) => {
+        if (n1 == null) {
+            //如果n1是空的，说明是初次渲染
+            mountElement(n2, container);
+        } else {
+            patchElement(n1, n2, container)
+        }
+    }
+    const parchProps = (oldProps, newProps, el) => {
+        // 新的要全部生效
+        for (let key in newProps) {
+            hostPatchProp(el, key, oldProps[key], newProps[key])
+        }
 
+        for (let key in oldProps) {
+            if (!(key in newProps)) { 
+                hostPatchProp(el, key, oldProps[key], null)
+            }
+        }
+    }
+    const patchChildren=(n1,n2,container)=>{
+        debugger
+    }
+    const patchElement = (n1, n2, container) => {
+        //1.比较元素的差异，需要复用dom元素
+        //2.比较属性和元素的子节点
+        let el = n2.el = n1.el//对dom元素的复用 
+        let oldProps = n1.props || {}
+        let newProps = n2.props || {}
+
+        //hostPatchProp 只针对某一个属性处理
+        parchProps(oldProps, newProps, el)
+
+        patchChildren(n1,n2,container)
+
+    }
     //渲染和更新元素
     const patch = (n1, n2, container) => {
         if (n1 === n2) {
             return;
         }
-        if (n1 == null) {
-            //如果n1是空的，说明是初次渲染
-            mountElement(n2, container);
+        //直接移除老的dom元素，初始化新的
+        if (n1 && !isSameVnode(n1, n2)) {
+            unmount(n1)
+            n1 = null
         }
+        processElement(n1, n2, container)//对元素处理 
     }
-
+    const unmount = (vnode) => {
+        hostRemove(vnode.el)
+    }
     const render = (vnode, container) => {
+        if (vnode == null) {
+            if (container._vnode) {
+                console.log(container._vnode);
+                unmount(container._vnode)
+            }
+
+        }
         //将虚拟节点变成真实节点
         patch(container._vnode || null, vnode, container);
         container._vnode = vnode;
