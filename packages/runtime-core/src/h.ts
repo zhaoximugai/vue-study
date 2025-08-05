@@ -9,6 +9,7 @@ export function h(type, propsOrChildren?, children?) {
         if (isObject(propsOrChildren) && !Array.isArray(propsOrChildren)) {
             //虚拟节点
             if (isVnode(propsOrChildren)) {
+                
                 return createVNode(type, null, [propsOrChildren])
             } else {
                 //属性

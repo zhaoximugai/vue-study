@@ -38,9 +38,6 @@ export function createRenderer(renderOptions) {
         }
         //将元素插入到容器中
         hostInsert(el, container);
-        //插入元素
-        hostInsert(el, container);
-
     }
     const processElement = (n1, n2, container) => {
         if (n1 == null) {
@@ -57,13 +54,54 @@ export function createRenderer(renderOptions) {
         }
 
         for (let key in oldProps) {
-            if (!(key in newProps)) { 
+            if (!(key in newProps)) {
                 hostPatchProp(el, key, oldProps[key], null)
             }
         }
     }
-    const patchChildren=(n1,n2,container)=>{
-        debugger
+    //子节点对比
+    const unmountChildren = (children) => {
+        for (let i = 0; i < children.length; i++) {
+            let child = children[i]
+
+            unmount(child)
+        }
+    }
+    const patchChildren = (n1, n2, el) => {
+        const c1 = n1.children
+        const c2 = n2.children
+
+        const prevShapeFlag = n1.shapeFlag
+        const shapeFlag = n2.shapeFlag
+
+        //新的是文本，老的是数组
+        if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
+            if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+
+                unmountChildren(c1)
+            }
+            if (c1 !== c2) {
+                hostSetElementText(el, c2)
+            }
+        } else {
+            if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+                //新的老的都是数组
+                if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+                    //全量diff算法
+                } else {
+                    //老的是数组，新的不是数组，直接移除
+                    unmountChildren(c1)
+                }
+            } else {
+                if (prevShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+                    hostSetElementText(el, '')
+                }
+                if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+                    mountChildren(c2, el)
+                }
+            }
+        }
+
     }
     const patchElement = (n1, n2, container) => {
         //1.比较元素的差异，需要复用dom元素
@@ -75,7 +113,7 @@ export function createRenderer(renderOptions) {
         //hostPatchProp 只针对某一个属性处理
         parchProps(oldProps, newProps, el)
 
-        patchChildren(n1,n2,container)
+        patchChildren(n1, n2, el)
 
     }
     //渲染和更新元素

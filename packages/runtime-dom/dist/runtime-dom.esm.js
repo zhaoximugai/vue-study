@@ -61,14 +61,17 @@ function patchEvent(el, name, nextValue) {
 
 // packages/runtime-dom/src/modules/patchStyle.ts
 function patchStyle(el, prevValue, nextValue) {
-  let style = el.style;
-  for (let key in nextValue) {
-    style[key] = nextValue[key];
-  }
-  if (prevValue) {
-    for (let key in prevValue) {
-      if (!nextValue || nextValue[key] === void 0) {
-        style[key] = null;
+  if (!nextValue) {
+    el.removeAttribute("style");
+  } else {
+    for (let styleName in nextValue) {
+      el.style[styleName] = nextValue[styleName];
+    }
+    if (prevValue) {
+      for (let styleName in prevValue) {
+        if (!nextValue || nextValue[styleName] === void 0) {
+          el.style[styleName] = "";
+        }
       }
     }
   }
@@ -179,7 +182,6 @@ function createRenderer(renderOptions2) {
       mountChildren(children, el);
     }
     hostInsert(el, container);
-    hostInsert(el, container);
   };
   const processElement = (n1, n2, container) => {
     if (n1 == null) {
@@ -198,15 +200,46 @@ function createRenderer(renderOptions2) {
       }
     }
   };
-  const patchChildren = (n1, n2, container) => {
-    debugger;
+  const unmountChildren = (children) => {
+    for (let i = 0; i < children.length; i++) {
+      let child = children[i];
+      unmount(child);
+    }
+  };
+  const patchChildren = (n1, n2, el) => {
+    const c1 = n1.children;
+    const c2 = n2.children;
+    const prevShapeFlag = n1.shapeFlag;
+    const shapeFlag = n2.shapeFlag;
+    if (shapeFlag & 8 /* TEXT_CHILDREN */) {
+      if (prevShapeFlag & 16 /* ARRAY_CHILDREN */) {
+        unmountChildren(c1);
+      }
+      if (c1 !== c2) {
+        hostSetElementText(el, c2);
+      }
+    } else {
+      if (prevShapeFlag & 16 /* ARRAY_CHILDREN */) {
+        if (shapeFlag & 16 /* ARRAY_CHILDREN */) {
+        } else {
+          unmountChildren(c1);
+        }
+      } else {
+        if (prevShapeFlag & 8 /* TEXT_CHILDREN */) {
+          hostSetElementText(el, "");
+        }
+        if (shapeFlag & 16 /* ARRAY_CHILDREN */) {
+          mountChildren(c2, el);
+        }
+      }
+    }
   };
   const patchElement = (n1, n2, container) => {
     let el = n2.el = n1.el;
     let oldProps = n1.props || {};
     let newProps = n2.props || {};
     parchProps(oldProps, newProps, el);
-    patchChildren(n1, n2, container);
+    patchChildren(n1, n2, el);
   };
   const patch = (n1, n2, container) => {
     if (n1 === n2) {
